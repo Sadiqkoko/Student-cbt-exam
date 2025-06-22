@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CBT Exam - {{ course_code }}</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f1f8ff;
+    padding: 20px;
+  }
+  h2 {
+    color: #0d47a1;
+  }
+  #timer {
+    font-size: 20px;
+    color: red;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  .exam-container {
+    display: flex;
+    gap: 20px;
+  }
+  .left-panel {
+    flex: 1;
+  }
+  .right-panel {
+    width: 180px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 0 10px #ccc;
+  }
+  .question-box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #ccc;
+  }
+  .options label {
+    display: block;
+    margin: 10px 0;
+    cursor: pointer;
+  }
+  .navigation {
+    margin-top: 20px;
+  }
+  button {
+    padding: 8px 12px;
+    font-size: 16px;
+    margin: 5px 3px;
+    cursor: pointer;
+    background: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+  }
+  button:disabled {
+    background: #a0a0a0;
+    cursor: not-allowed;
+  }
+  .question-palette {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .q-box {
+    width: 30px;
+    height: 30px;
+    background: #ccc;
+    border-radius: 4px;
+    text-align: center;
+    line-height: 30px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .q-box.answered {
+    background: #4caf50;
+    color: white;
+  }
+  .q-box.active {
+    border: 2px solid #1976d2;
+  }
+</style>
+</head>
+<body>
+<h2>Exam for Course: {{ course_code }}</h2>
+<div id="timer">Time Left: 40:00</div>
+
+<div class="exam-container">
+  <div class="left-panel">
+    <form id="examForm" method="POST" onsubmit="return confirmSubmit()">
+      <div class="question-box">
+        <div id="question-number"></div>
+        <div id="question-text" style="margin: 10px 0;"></div>
+        <div class="options">
+          <label><input type="radio" name="answer" value="A"> <span id="optionA"></span></label>
+          <label><input type="radio" name="answer" value="B"> <span id="optionB"></span></label>
+          <label><input type="radio" name="answer" value="C"> <span id="optionC"></span></label>
+          <label><input type="radio" name="answer" value="D"> <span id="optionD"></span></label>
+        </div>
+      </div>
+
+      <div class="navigation">
+        <button type="button" id="prevBtn" onclick="prevQuestion()">Previous</button>
+        <button type="button" id="nextBtn" onclick="nextQuestion()">Next</button>
+        <button type="submit" id="submitBtn" style="display:none; background:#d32f2f;">Submit</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="right-panel">
+    <h4>Question Box</h4>
+    <div class="question-palette" id="questionPalette"></div>
+  </div>
+</div>
+
+<script>
+  const questions = {{ questions|tojson }};
+  const timeLimitMinutes = {{ TIME_LIMIT }};
+  let currentIndex = 0;
+  let answers = new Array(questions.length).fill(null);
+
+  const timerDisplay = document.getElementById('timer');
+  const questionNumber = document.getElementById('question-number');
+  const questionText = document.getElementById('question-text');
+  const optionA = document.getElementById('optionA');
+  const optionB = document.getElementById('optionB');
+  const optionC = document.getElementById('optionC');
+  const optionD = document.getElementById('optionD');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  const examForm = document.getElementById('examForm');
+  const questionPalette = document.getElementById('questionPalette');
+
+  function loadQuestion(index) {
+    let q = questions[index];
+    questionNumber.textContent = `Question ${index + 1} of ${questions.length}`;
+    questionText.textContent = q.question_text;
+    optionA.textContent = q.option_a;
+    optionB.textContent = q.option_b;
+    optionC.textContent = q.option_c;
+    optionD.textContent = q.option_d;
+
+    // Clear previous selection
+    let radios = examForm.elements['answer'];
+    for (let r of radios) {
+      r.checked = false;
+    }
+
+    // Restore previous answer
+    if (answers[index]) {
+      for (let r of radios) {
+        if (r.value === answers[index]) {
+          r.checked = true;
+        }
+      }
+    }
+
+    highlightActiveBox(index);
+    prevBtn.disabled = (index === 0);
+    nextBtn.style.display = (index === questions.length - 1) ? 'none' : 'inline-block';
+    submitBtn.style.display = (index === questions.length - 1) ? 'inline-block' : 'none';
+  }
+
+  function prevQuestion() {
+    saveAnswer();
+    if (currentIndex > 0) {
+      currentIndex--;
+      loadQuestion(currentIndex);
+    }
+  }
+
+  function nextQuestion() {
+    saveAnswer();
+    if (currentIndex < questions.length - 1) {
+      currentIndex++;
+      loadQuestion(currentIndex);
+    }
+  }
+
+  function saveAnswer() {
+    let radios = examForm.elements['answer'];
+    for (let r of radios) {
+      if (r.checked) {
+        answers[currentIndex] = r.value;
+        updateBoxColor(currentIndex);
+        break;
+      }
+    }
+  }
+
+  function confirmSubmit() {
+    saveAnswer();
+    if (!answers.includes(null)) {
+      return confirm("Are you sure you want to submit?");
+    } else {
+      alert("Please answer all questions before submitting.");
+      return false;
+    }
+  }
+
+  // Timer
+  let timeLeft = timeLimitMinutes * 60;
+  function updateTimer() {
+    let minutes = Math.floor(timeLeft / 60);
+    let seconds = timeLeft % 60;
+    timerDisplay.textContent = `Time Left: ${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+    if (timeLeft <= 0) {
+      alert("Time is up! Your exam will be submitted.");
+      examForm.submit();
+    }
+    timeLeft--;
+  }
+  setInterval(updateTimer, 1000);
+
+  // Question Palette Boxes
+  function createQuestionBoxes() {
+    for (let i = 0; i < questions.length; i++) {
+      let box = document.createElement('div');
+      box.className = 'q-box';
+      box.textContent = i + 1;
+      box.addEventListener('click', () => {
+        saveAnswer();
+        currentIndex = i;
+        loadQuestion(currentIndex);
+      });
+      questionPalette.appendChild(box);
+    }
+  }
+
+  function updateBoxColor(index) {
+    let box = questionPalette.children[index];
+    if (answers[index]) {
+      box.classList.add('answered');
+    }
+  }
+
+  function highlightActiveBox(index) {
+    Array.from(questionPalette.children).forEach((box, i) => {
+      box.classList.toggle('active', i === index);
+    });
+  }
+
+  // Initialize
+  createQuestionBoxes();
+  loadQuestion(currentIndex);
+</script>
+</body>
+</html>

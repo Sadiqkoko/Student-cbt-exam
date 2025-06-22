@@ -1,0 +1,101 @@
+<!-- templates/cbt_result.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CBT Exam Result</title>
+    <style>
+        body {
+            background: #f0f4f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .result-box {
+            background: #fff;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .result-box h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        .score {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .status {
+            font-size: 20px;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .passed {
+            background: #d4edda;
+            color: #155724;
+        }
+        .failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .percentage {
+            margin-top: 10px;
+            font-size: 18px;
+            color: #555;
+        }
+        .home-btn {
+            margin-top: 25px;
+            padding: 10px 25px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+        .home-btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="result-box">
+    <h2>CBT Exam Result</h2>
+    <div class="score">
+        Your Score: {{ score }} out of {{ total }}
+    </div>
+    <div id="status" class="status"></div>
+    <div class="percentage" id="percentage"></div>
+    <a href="/" class="home-btn">Back to Home</a>
+</div>
+
+<script>
+    const score = {{ score }};
+    const total = {{ total }};
+    const percent = (score / total) * 100;
+    const statusBox = document.getElementById("status");
+    const percentBox = document.getElementById("percentage");
+
+    percentBox.innerText = `Percentage: ${percent.toFixed(2)}%`;
+
+    if (percent >= 50) {
+        statusBox.classList.add("passed");
+        statusBox.innerText = "Status: Passed";
+    } else {
+        statusBox.classList.add("failed");
+        statusBox.innerText = "Status: Failed";
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My CBT Courses</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f2f8ff;
+            padding: 20px;
+        }
+        h2 {
+            color: #007bff;
+            text-align: center;
+        }
+        .course-section {
+            width: 80%;
+            margin: auto;
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        label {
+            display: block;
+            margin: 8px 0;
+            cursor: pointer;
+        }
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            display: block;
+            margin: 20px auto;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>First Semester Courses</h2>
+<form method="post" action="{{ url_for('save_selected_courses') }}">
+    {% for course in courses if course.semester == 'First' %}
+        <label>
+            <input type="checkbox" name="selected_courses" value="{{ course.course_code }}">
+            {{ course.course_code }} - {{ course.course_title }}
+        </label><br>
+    {% endfor %}
+
+    <h2>Second Semester Courses</h2>
+    {% for course in courses if course.semester == 'Second' %}
+        <label>
+            <input type="checkbox" name="selected_courses" value="{{ course.course_code }}">
+            {{ course.course_code }} - {{ course.course_title }}
+        </label><br>
+    {% endfor %}
+
+    <h2>Elective Courses</h2>
+    {% for course in electives %}
+        <label>
+            <input type="checkbox" name="selected_courses" value="{{ course.course_code }}">
+            {{ course.course_code }} - {{ course.course_title }}
+        </label><br>
+    {% endfor %}
+
+    <br><input type="submit" value="Submit Selected Courses">
+</form>
+
+</body>
+</html>

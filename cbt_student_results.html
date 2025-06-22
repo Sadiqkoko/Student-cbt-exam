@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CBT Student Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eef2f7;
+            padding: 20px;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 12px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1, h3 {
+            text-align: center;
+            color: #003366;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #003366;
+            color: white;
+        }
+        button {
+            background-color: #0059b3;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            display: block;
+            margin: 30px auto 0 auto;
+        }
+        button:hover {
+            background-color: #003d80;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>KOKO UNIVERSITY OF SCIENCE AND TECHNOLOGY</h1>
+        <h3>CBT Exam Results for {{ student_name }} ({{ admission_number }})</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Course Code</th>
+                    <th>Score</th>
+                    <th>Total Questions</th>
+                    <th>Date Taken</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for res in results %}
+                <tr>
+                    <td>{{ res[0] }}</td>
+                    <td>{{ res[1] }}</td>
+                    <td>{{ res[2] }}</td>
+                    <td>{{ res[3] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <form method="post">
+            <button type="submit" name="download" value="Download">Download Results</button>
+        </form>
+    </div>
+</body>
+</html>

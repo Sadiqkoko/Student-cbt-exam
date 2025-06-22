@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Choose Course</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f4f8; padding: 30px;}
+    select, button { font-size: 16px; padding: 8px; margin-top: 10px; }
+    button { cursor: pointer; background: #007BFF; color: white; border: none; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h2>Select a Course to Start Exam</h2>
+  <form method="post">
+    <select name="course_code" required>
+      <option value="">-- Select Course --</option>
+      {% for code in courses %}
+        <option value="{{ code }}">{{ code }}</option>
+      {% endfor %}
+    </select><br />
+    <button type="submit">Start Exam</button>
+  </form>
+</body>
+</html>

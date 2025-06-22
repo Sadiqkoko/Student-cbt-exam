@@ -1,0 +1,79 @@
+<!-- templates/cbt_exam.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CBT Exam - {{ course_code }}</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f9f9f9;
+            padding: 30px;
+        }
+        .exam-box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+            max-width: 700px;
+            margin: auto;
+        }
+        h2 {
+            color: #333;
+        }
+        .option {
+            margin: 10px 0;
+        }
+        .option input {
+            margin-right: 10px;
+        }
+        .btn {
+            background: blue;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            margin-top: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .timer {
+            float: right;
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        let totalSeconds = 40 * 60;
+        function startTimer() {
+            const timer = document.getElementById("timer");
+            setInterval(function () {
+                let minutes = Math.floor(totalSeconds / 60);
+                let seconds = totalSeconds % 60;
+                timer.textContent = `Time Left: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                totalSeconds--;
+                if (totalSeconds < 0) {
+                    alert("Time is up!");
+                    document.getElementById("examForm").submit();
+                }
+            }, 1000);
+        }
+    </script>
+</head>
+<body onload="startTimer()">
+
+    <div class="exam-box">
+        <div class="timer" id="timer">Time Left: 40:00</div>
+        <h2>{{ course_code }} – Question {{ q_no }} of {{ total }}</h2>
+        <form method="POST" id="examForm">
+            <p><strong>{{ question.question }}</strong></p>
+            <div class="option"><input type="radio" name="answer" value="A" required> A. {{ question.option_a }}</div>
+            <div class="option"><input type="radio" name="answer" value="B"> B. {{ question.option_b }}</div>
+            <div class="option"><input type="radio" name="answer" value="C"> C. {{ question.option_c }}</div>
+            <div class="option"><input type="radio" name="answer" value="D"> D. {{ question.option_d }}</div>
+            <input type="hidden" name="course_code" value="{{ course_code }}">
+            <button type="submit" class="btn">Next</button>
+        </form>
+    </div>
+
+</body>
+</html>

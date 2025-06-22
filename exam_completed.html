@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exam Completed</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #e0f7ff, #ffffff);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .result-box {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .result-box h1 {
+            color: #007bff;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .score {
+            font-size: 26px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .status {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .passed {
+            color: green;
+        }
+
+        .failed {
+            color: red;
+        }
+
+        .btn {
+            margin-top: 30px;
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="result-box">
+    <h1>Exam Completed</h1>
+    <div class="score">Your Score: <span id="score">{{ score }}</span> / {{ total }}</div>
+    <div class="status" id="statusMsg"></div>
+    <a href="/" class="btn">Go to Home</a>
+</div>
+
+<script>
+    const score = parseInt(document.getElementById("score").innerText);
+    const statusMsg = document.getElementById("statusMsg");
+
+    if (score >= 20) {
+        statusMsg.innerText = "Status: Passed";
+        statusMsg.classList.add("passed");
+    } else {
+        statusMsg.innerText = "Status: Failed";
+        statusMsg.classList.add("failed");
+    }
+</script>
+
+</body>
+</html>
